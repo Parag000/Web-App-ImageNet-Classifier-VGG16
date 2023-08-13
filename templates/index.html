@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VGG16 Image Classifier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 400px;
+            padding: 30px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 2px dashed #3498db;
+            padding: 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.3s, background-color 0.3s, transform 0.3s;
+        }
+
+        label:hover {
+            border-color: #1b6ca8;
+            background-color: #f0f0f0;
+            transform: scale(1.02);
+        }
+
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+            text-align: center;
+        }
+
+        #imageUpload {
+            display: none;
+        }
+
+        #uploadedImage {
+            width: 100%;
+            max-height: 300px;
+            margin-top: 20px;
+            display: none;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #predictButton {
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+            display: none;
+            margin-top: 15px;
+        }
+
+        #predictButton:hover {
+            background-color: #1b6ca8;
+        }
+
+        .prediction-container {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for the predicted text */
+        .prediction-text {
+            font-size: 20px;
+            color: #fff;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            text-transform: capitalize; /* Capitalize the prediction */
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        #removeImageButton {
+            background-color: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+            width: 100%;
+            display: none;
+            margin-top: 10px;
+        }
+
+        #removeImageButton:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>VGG16 Image Classifier</h2>
+
+        <form action="/" method="POST" enctype="multipart/form-data">
+            <label for="imageUpload" class="file-upload-label">
+                <span>Choose an image</span>
+                <input type="file" id="imageUpload" name="imageUpload" accept="image/*">
+            </label>
+            <span class="file-name" id="fileName">No file chosen</span>
+            <img id="uploadedImage" src="#" alt="Uploaded Image">
+            <button id="predictButton">Predict Image</button>
+            <button id="removeImageButton" style="display: none;">Remove Image</button>
+        </form>
+
+        <div class="prediction-container">
+            {% if prediction %}
+            <p class="prediction-text">Image is a {{ prediction }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('imageUpload');
+        const fileName = document.getElementById('fileName');
+        const uploadedImage = document.getElementById('uploadedImage');
+        const predictButton = document.getElementById('predictButton');
+        const removeImageButton = document.getElementById('removeImageButton');
+
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            if (files.length > 0) {
+                fileName.textContent = files[0].name;
+                uploadedImage.style.display = 'block';
+                predictButton.style.display = 'block';
+                removeImageButton.style.display = 'block'; // Display the remove image button
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                };
+                reader.readAsDataURL(files[0]);
+            } else {
+                fileName.textContent = 'No file chosen';
+                uploadedImage.style.display = 'none';
+                predictButton.style.display = 'none';
+                removeImageButton.style.display = 'none'; // Hide the remove image button
+            }
+        });
+
+        removeImageButton.addEventListener('click', () => {
+            uploadedImage.style.display = 'none'; // Hide the uploaded image
+            removeImageButton.style.display = 'none'; // Hide the remove image button
+            fileInput.value = ''; // Reset the file input
+            fileName.textContent = 'No file chosen';
+        });
+    </script>
+</body>
+</html>
